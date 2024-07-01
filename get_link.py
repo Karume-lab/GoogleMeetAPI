@@ -39,12 +39,12 @@ def main():
         service = build("calendar", "v3", credentials=creds)
 
         # Define the date and time for the event
-        start_time = datetime.datetime(
-            2024, 7, 1, 18, 55, 0
-        ).isoformat()  # July 1, 2024, 6:55 PM
-        end_time = datetime.datetime(
-            2024, 7, 1, 19, 55, 0
-        ).isoformat()  # July 1, 2024, 7:55 PM
+        start_time = (
+            datetime.datetime(2024, 7, 1, 18, 55, 0).isoformat() + "Z"
+        )  # July 1, 2024, 6:55 PM UTC
+        end_time = (
+            datetime.datetime(2024, 7, 1, 19, 55, 0).isoformat() + "Z"
+        )  # July 1, 2024, 7:55 PM UTC
 
         # Define the event details
         event = {
@@ -63,20 +63,7 @@ def main():
                     "conferenceSolutionKey": {
                         "type": "hangoutsMeet"
                     },  # Type of conference (Google Meet)
-                    "entryPoints": [
-                        {
-                            "entryPointType": "video",
-                            "uri": "https://meet.google.com/sample-meet-link",
-                            "label": "Join with Google Meet",
-                            "meetingCode": "sample-meet-link",
-                        }
-                    ],
-                },
-                "conferenceSolution": {
-                    "key": {"type": "hangoutsMeet"},
-                    "name": "Google Meet",
-                },
-                "status": {"statusCode": "success"},
+                }
             },
             "attendees": [
                 {
