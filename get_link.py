@@ -1,21 +1,17 @@
 from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
-from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 import os
-from datetime import datetime, timedelta
 from decouple import config, Csv
 
-
-# Initialize decouple's Config object with your .env file path
-
+# Define SCOPES required for Google Calendar and Meet APIs
 SCOPES = [
     "https://www.googleapis.com/auth/meetings.space.created",
     "https://www.googleapis.com/auth/calendar.events",
 ]
 
 
-def create_open_meet_link():
+def create_meet_link():
     # Construct the client_config dictionary from decouple
     client_config = {
         "installed": {
@@ -29,17 +25,18 @@ def create_open_meet_link():
         }
     }
 
-    creds = None
-    if os.path.exists("token.json"):
-        creds = Credentials.from_authorized_user_file("token.json", SCOPES)
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_config(client_config, SCOPES)
-            creds = flow.run_local_server(port=0)
-        with open("token.json", "w") as token:
-            token.write(creds.to_json())
+    # Hardcoded credentials
+    creds = Credentials(
+        token=config("GOOGLE_ACCESS_TOKEN"),
+        refresh_token=config("GOOGLE_REFRESH_TOKEN"),
+        token_uri=client_config["installed"]["token_uri"],
+        client_id=client_config["installed"]["client_id"],
+        client_secret=client_config["installed"]["client_secret"],
+        scopes=SCOPES,
+    )
+
+    if creds and creds.expired and creds.refresh_token:
+        creds.refresh(Request())
 
     try:
         meet_service = build("meet", "v2", credentials=creds)
@@ -63,5 +60,5 @@ def create_open_meet_link():
 
 
 if __name__ == "__main__":
-    result = create_open_meet_link()
+    result = create_meet_link()
     print(result)
