@@ -4,6 +4,9 @@ from googleapiclient.discovery import build
 import os
 from decouple import config, Csv
 
+from get_tokens import get_new_access_token
+
+
 # Define SCOPES required for Google Calendar and Meet APIs
 SCOPES = [
     "https://www.googleapis.com/auth/meetings.space.created",
@@ -27,7 +30,11 @@ def create_meet_link():
 
     # Hardcoded credentials
     creds = Credentials(
-        token=config("GOOGLE_ACCESS_TOKEN"),
+        token=get_new_access_token(
+            config("GOOGLE_CLIENT_ID"),
+            config("GOOGLE_CLIENT_SECRET"),
+            config("GOOGLE_REFRESH_TOKEN"),
+        ),
         refresh_token=config("GOOGLE_REFRESH_TOKEN"),
         token_uri=client_config["installed"]["token_uri"],
         client_id=client_config["installed"]["client_id"],
